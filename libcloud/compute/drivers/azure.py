@@ -390,6 +390,31 @@ class AzureNodeDriver(NodeDriver):
 
         return images
 
+    def delete_image(self, image):
+        """
+        Delete Azure OS or VM image
+
+        :keyword     image: The image to delete
+        :type        image:  `NodeImage`
+        """
+        if not isinstance(image, NodeImage):
+            raise ValueError(
+                "Image must be an instance of NodeImage, "
+                "produced by list_images()"
+            )
+
+        if image.extra.get("vm_image", False):
+            path = self._get_vmimage_path(image.id)
+        else:
+            path = self._get_image_path(image.id)
+
+        path += "?comp=media"
+
+        response = self._perform_delete(path)
+        self.raise_for_response(response, 200)
+
+        return True
+
     def list_locations(self):
         """
         Lists all locations
@@ -867,7 +892,8 @@ class AzureNodeDriver(NodeDriver):
 
         path += '?comp=media'
 
-        self._perform_delete(path)
+        response = self._perform_delete(path)
+        self.raise_for_response(response, 202)
 
         return True
 
@@ -1468,10 +1494,7 @@ class AzureNodeDriver(NodeDriver):
         request.headers = self._update_management_header(request)
         response = self._perform_request(request)
 
-        self.raise_for_response(response, 202)
-
-        if async:
-            return self._parse_response_for_async_op(response)
+        return response
 
     def _perform_request(self, request):
         try:

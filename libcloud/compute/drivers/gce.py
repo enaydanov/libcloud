@@ -674,7 +674,7 @@ class GCENodeImage(NodeImage):
         :return: True if successful
         :rtype:  ``bool``
         """
-        return self.driver.ex_delete_image(image=self)
+        return self.driver.delete_image(image=self)
 
     def deprecate(self, replacement, state, deprecated=None, obsolete=None,
                   deleted=None):
@@ -6450,7 +6450,7 @@ class GCENodeDriver(NodeDriver):
         self.connection.async_request(request, method='DELETE')
         return True
 
-    def ex_delete_image(self, image):
+    def delete_image(self, image):
         """
         Delete a specific image resource.
 
@@ -6466,6 +6466,10 @@ class GCENodeDriver(NodeDriver):
         request = '/global/images/%s' % (image.name)
         self.connection.async_request(request, method='DELETE')
         return True
+
+
+    # For backward compatibility.
+    ex_delete_image = delete_image
 
     def ex_deprecate_image(self, image, replacement, state=None,
                            deprecated=None, obsolete=None, deleted=None):

@@ -2852,6 +2852,10 @@ RESOURCE_EXTRA_ATTRIBUTES_MAP = {
         'sriov_net_support': {
             'xpath': 'sriovNetSupport',
             'transform_func': str
+        },
+        'creation_date': {
+            'xpath': 'creationDate',
+            'transform_func': parse_date
         }
     },
     'network': {
